@@ -353,7 +353,7 @@ async function dealReturn(type, res) {
           console.log(`获得[${res.couponName}]优惠券：${res.usageThreshold} 优惠：${res.quota} 时间：${res.useTimeRange}`);
         }else if(data.data.result.userActBaseVO){
           console.log('结算结果')
-          let res = data.data.result.couponVO
+          let res = data.data.result.userActBaseVO
           console.log(`当前金额：${res.totalMoney}\n${JSON.stringify(res)}`);
         }
       } else if (data.data && data.data.bizMsg) {
