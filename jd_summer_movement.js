@@ -194,7 +194,7 @@ async function movement() {
           }
           $.callbackInfo = {};
           console.log(`做任务：${$.oneActivityInfo.title || $.oneActivityInfo.taskName || $.oneActivityInfo.shopName};等待完成`);
-          if ($.oneTask.taskType === 21 && summer_movement_joinjoinjoinhui){
+          if ($.oneTask.taskType === 21 && summer_movement_joinjoinjoinhui == true){
             let channel = $.oneActivityInfo.memberUrl.match(/channel=(\d+)/) ? $.oneActivityInfo.memberUrl.match(/channel=(\d+)/)[1] : '';
             const jiarubody = {
               venderId: $.oneActivityInfo.vendorIds,
