@@ -13,14 +13,17 @@ const MovementFaker = require('./MovementFaker.js')
 const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
-const pKHelpFlag = true;//是否PK助力  true 助力，false 不助力
+const ShHelpFlag = true;//是否SH助力  true 助力，false 不助力
+const ShHelpAuthorFlag = true;//是否助力作者SH  true 助力，false 不助力
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [];
 $.cookie = '';
 $.inviteList = [];
-$.pkInviteList = [];
 $.secretpInfo = {};
-$.innerPkInviteList = [];
+$.ShInviteList = [];
+$.innerShInviteList = [
+  'H8mphLbwLgz3e4GeFdc0g9GS9KyvaS3S'
+];
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
@@ -53,6 +56,15 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       if($.hotFlag)$.secretpInfo[$.UserName] = false;//火爆账号不执行助力
     }
   }
+  let res = [];
+  if (new Date().getUTCHours() + 8 >= 17) res = await getAuthorShareCode() || [];
+  if (ShHelpAuthorFlag) {
+    $.innerShInviteList = getRandomArrayElements([...$.innerShInviteList, ...res], [...$.innerShInviteList, ...res].length);
+    $.ShInviteList.push(...$.innerShInviteList);
+  }
+  
+  
+  // 助力
   for (let i = 0; i < cookiesArr.length; i++) {
     $.cookie = cookiesArr[i];
     $.canHelp = true;
@@ -62,6 +74,16 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
     }
     // $.secretp = $.secretpInfo[$.UserName];
     $.index = i + 1;
+    if (new Date().getUTCHours() + 8 >= 9) {
+      console.log(`\n******开始内部京东账号【百元守卫站SH】助力*********\n`);
+      for (let i = 0; i < $.ShInviteList.length && ShHelpFlag && $.canHelp; i++) {
+        console.log(`${$.UserName} 去助力SH码 ${$.ShInviteList[i]}`);
+        $.inviteId = $.ShInviteList[i];
+        await takePostRequest('shHelp');
+        await $.wait(1000);
+      }
+      $.canHelp = true;
+    }
     if ($.inviteList && $.inviteList.length) console.log(`\n******开始内部京东账号【邀请好友助力】*********\n`);
     for (let j = 0; j < $.inviteList.length && $.canHelp; j++) {
       $.oneInviteInfo = $.inviteList[j];
@@ -112,6 +134,9 @@ async function movement() {
         await $.wait(1000);
       }
     }
+    await $.wait(1000);
+    console.log('百元守卫站')
+    await takePostRequest('olypicgames_guradHome');
     
     await $.wait(1000);
     await takePostRequest('olympicgames_getTaskDetail');
@@ -206,6 +231,10 @@ async function takePostRequest(type) {
       body = `functionId=olympicgames_receiveCash&body={"type":6}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
       myRequest = await getPostRequest(`olympicgames_receiveCash`, body);
       break
+    case 'olypicgames_guradHome':
+      body = `functionId=olypicgames_guradHome&body={}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
+      myRequest = await getPostRequest(`olypicgames_guradHome`, body);
+      break
     case 'olympicgames_getTaskDetail':
       body = `functionId=${type}&body={"taskId":"","appSign":"1"}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
       myRequest = await getPostRequest(`olympicgames_getTaskDetail`, body);
@@ -222,6 +251,7 @@ async function takePostRequest(type) {
       body = await getPostBody(type);
       myRequest = await getPostRequest(`olympicgames_doTaskDetail`,body);
       break;
+    case 'shHelp':
     case 'help':
       body = await getPostBody(type);
       //console.log(body);
@@ -247,11 +277,11 @@ async function takePostRequest(type) {
 }
 
 
-async function dealReturn(type, result) {
+async function dealReturn(type, res) {
   try {
-    data = JSON.parse(result);
+    data = JSON.parse(res);
   } catch (e) {
-    console.log(`返回异常：${result}`);
+    console.log(`返回异常：${res}`);
     return;
   }
   switch (type) {
@@ -267,7 +297,7 @@ async function dealReturn(type, result) {
       if (data.code === 0 && data.data && data.data.result) {
         console.log(`收取成功，获得：${data.data.result.poolCurrency}`);
       }else{
-        console.log(result);
+        console.log(res);
       }
       if(data.code === 0 && data.data && data.data.bizCode === -1002){
         $.hotFlag = true;
@@ -282,7 +312,7 @@ async function dealReturn(type, result) {
           console.log(`获得[${res.couponName}]优惠券：${res.usageThreshold} 优惠：${res.quota} 时间：${res.useTimeRange}`);
         }
       }else{
-        console.log(result);
+        console.log(res);
       }
       break;
     case 'olympicgames_getTaskDetail':
@@ -299,11 +329,21 @@ async function dealReturn(type, result) {
         $.taskList = data.data.result && data.data.result.taskVos || [];
       }
       break;
+    case 'olypicgames_guradHome':
+      if (data.code === 0) {
+        console.log(res)
+        console.log(`SH互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败'}`);
+        if (data.data.result && data.data.result.inviteId) {
+          if (data.data.result.inviteId) $.ShInviteList.push(data.data.result.inviteId);
+        }
+        $.taskList = data.data.result && data.data.result.taskVos || [];
+      }
+      break;
     case 'olympicgames_doTaskDetail':
       $.callbackInfo = data;
       break;
     case 'olympicgames_getFeedDetail':
-      // console.log(result)
+      // console.log(res)
       if (data.code === 0) {
         $.feedDetailInfo = data.data.result.addProductVos[0] || [];
       }
@@ -317,10 +357,11 @@ async function dealReturn(type, result) {
           console.log(`加购成功`);
         }
       }else{
-        console.log(result);
+        console.log(res);
         console.log(`加购失败`);
       }
       break
+      case 'shHelp':
       case 'help':
         if(data.data && data.data.bizCode === 0){
           let cash = ''
@@ -332,7 +373,7 @@ async function dealReturn(type, result) {
           }
           console.log(data.data.bizMsg);
         }else{
-          console.log(result);
+          console.log(res);
         }
         break;
     default:
@@ -347,7 +388,7 @@ async function getPostBody(type) {
     let taskBody = '';
     try {
       const log = await MovementFaker.getBody($)
-      if (type === 'help') {
+      if (type === 'help' || type === 'shHelp') {
         taskBody = `functionId=olympicgames_assist&body=${JSON.stringify({"inviteId":$.inviteId,"type": "confirm","ss" :log})}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`
       } else if (type === 'olympicgames_collectCurrency') {
         taskBody = `functionId=olympicgames_collectCurrency&body=${JSON.stringify({"type":$.collectId,"ss" : log})}&client=wh5&clientVersion=1.0.0&appid=${$.appid}`;
@@ -443,10 +484,6 @@ function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min) ) + min;
 }
 
-// HcmphLbwLgz3e4GeFdc0gyCnu5wlLizkvmSWIFXp22aPrXt7J52xeOZdxQbiZfu8JBSaLVWZdlLd895623Ef7A
-// P225KkcRkoc91DVIx2hkfALcgFjRWn667zB4ACWD52H9DkYC9bLg
-// {"taskId":1,"taskToken":"P225KkcRkoc91DVIx2hkfALcgFjRWn667zB4ACWD52H9DkYC9bLg","ss":"{\"extraData\":{\"log\":\"1625681591610~1gRLzpIpjr3MDFnU3VRUDAxMQ==.VmVHZGZfYkdgYFZgQi9oMAFCaRNVMjtnLlZ/Q31lS2ELYy5WLRQBBCZzMAsqMRIRMj4/BSNgHhU3ECYBWm4L.306c2479~5,2~46BA39D9DA866D59B975C915589D04334A6B14921AD218047D9AEE6B82EB7DF7~1chssz4~C~SRVBWxcLbm8YFEVYWBANbmsZE1JAWhQLBBkQREYUDxMEBAYDBw4EBwQMBgUHBwANABMaF0VSURQPE0FGQEJFFBkQQFBXFwsXVFJCRUNBR1YXGhdBUVwWDGoHBh4FBwYZBBkFGAIdB2geFV9cFwsGHhZVQhQPEFVUVwEEDQIFBQIEAVcGDARWBA1RAlcFBAQDAwMBUFMDEBgUX0YXCBViX1sCBxAYFEUUDwMBBwMDCQQHDQcHBwUeFV9dFwsXUxYaE1BFUBUPFFRhYXMUc2tMY3NTVlhtZ2MDekRVU0JjCggUGRNbRBYME3FaXVBZUxV4W1EaFB0UW1NBFwwXAAMFAg8FFBkQRFZEFwtuCwYAHQIHCmoZFEdeFwhvFFAUGRBWFxoXUBceFlcTGhdTFRkUVBMZEFUUbBoXW1hUFA8TU1RSUFdQQUYVGRRUWxcIFkMTGhdRXhcMF0YGHAUYARQZEFRTaUMTDxAEBxMaF1BTFwwXQ1RcUFlcCwcLBwABAQUEEBgUXFwXCGwFGgUdBW8YFFNaWlUVDxRUExkQWUVWFA8QVhdL~0s0cmu4\",\"sceneid\":\"OY217hPageh5\"},\"random\":\"29057441\"}","actionType":1}
-// olympicgames_getMyFriend
   
 
 
