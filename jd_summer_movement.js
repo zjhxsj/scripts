@@ -58,7 +58,7 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       '店铺任务 已添加\n' +
       '新增 入会环境变量 默认不入会\n' +
       '活动时间：2021-07-08至2021-08-8\n' +
-      '脚本更新时间：2021年7月8日 19点00分\n'
+      '脚本更新时间：2021年7月8日 20点00分\n'
       );
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
@@ -287,7 +287,7 @@ async function movement() {
       $.shopTask = $.shopResult.taskVos || [];
       for (let i = 0; i < $.shopTask.length; i++) {
         $.oneTask = $.shopTask[i];
-        if($.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;} //不做邀请
+        if($.oneTask.taskType === 21 || $.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;}  //不做入会//不做邀请
         taskbool = true
         $.activityInfoList = $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.shoppingActivityVos || $.oneTask.browseShopVo || $.oneTask.simpleRecordInfoVo;
         if($.oneTask.taskType === 12){//签到
