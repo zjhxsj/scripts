@@ -276,6 +276,7 @@ async function movement() {
     $.shopInfoList = [];
     await takePostRequest('qryCompositeMaterials');
     for (let i = 0; i < $.shopInfoList.length; i++) {
+      let taskbool = false
       if(!aabbiill()) continue;
       $.shopSign = $.shopInfoList[i].extension.shopId;
       console.log(`执行第${i+1}个店铺任务：${$.shopInfoList[i].name} ID:${$.shopSign}`);
@@ -287,6 +288,7 @@ async function movement() {
       for (let i = 0; i < $.shopTask.length; i++) {
         $.oneTask = $.shopTask[i];
         if($.oneTask.taskType === 14 || $.oneTask.status !== 1){continue;} //不做邀请
+        taskbool = true
         $.activityInfoList = $.oneTask.brandMemberVos || $.oneTask.followShopVo || $.oneTask.shoppingActivityVos || $.oneTask.browseShopVo || $.oneTask.simpleRecordInfoVo;
         if($.oneTask.taskType === 12){//签到
           $.oneActivityInfo =  $.activityInfoList;
@@ -312,7 +314,7 @@ async function movement() {
           }
         }
       }
-      await $.wait(1000);
+      if(taskbool) await $.wait(1000);
       let boxLotteryNum = $.shopResult.boxLotteryNum;
       for (let j = 0; j < boxLotteryNum; j++) {
         console.log(`开始第${j+1}次拆盒`)
@@ -327,7 +329,7 @@ async function movement() {
       //   await takePostRequest('zoo_wishShopLottery');
       //   await $.wait(3000);
       // }
-      await $.wait(3000);
+      if(taskbool) await $.wait(3000);
     }
 
     $.Shend = false
