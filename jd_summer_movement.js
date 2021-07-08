@@ -53,7 +53,7 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
       '新增模式 正道的光\n' +
       '添加入会但并不完全入会(领取已经入会的任务，脚本不会入会请放心使用)\n' +
       '活动时间：2021-07-08至2021-08-8\n' +
-      '脚本更新时间：2021年7月8日 16点00分\n'
+      '脚本更新时间：2021年7月8日 17点00分\n'
       );
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
@@ -71,7 +71,6 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
   }
   // 助力
   let res = [];
-  if (new Date().getUTCHours() + 8 >= 17) res = await getAuthorShareCode() || [];
   if (ShHelpAuthorFlag) {
     $.innerShInviteList = getRandomArrayElements([...$.innerShInviteList, ...res], [...$.innerShInviteList, ...res].length);
     $.ShInviteList.push(...$.innerShInviteList);
