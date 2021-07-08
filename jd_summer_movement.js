@@ -7,6 +7,8 @@ https://wbbny.m.jd.com/babelDiy/Zeus/2rtpffK8wqNyPBH6wyUDuBKoAbCt/index.html
 需要解密
 https://raw.githubusercontent.com/smiek2221/scripts/master/MovementFaker.js
 
+解密脚本 跟 任务脚本同一目录 可以手动下载
+
 */
 const $ = new Env('燃动夏季');
 const MovementFaker = require('./MovementFaker.js')
