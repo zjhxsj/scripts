@@ -63,7 +63,7 @@ const UA = $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT :
     $.ShInviteList.push(...$.innerShInviteList);
   }
   
-  
+
   // 助力
   for (let i = 0; i < cookiesArr.length; i++) {
     $.cookie = cookiesArr[i];
@@ -331,7 +331,6 @@ async function dealReturn(type, res) {
       break;
     case 'olypicgames_guradHome':
       if (data.code === 0) {
-        console.log(res)
         console.log(`SH互助码：${data.data.result && data.data.result.inviteId || '助力已满，获取助力码失败'}`);
         if (data.data.result && data.data.result.inviteId) {
           if (data.data.result.inviteId) $.ShInviteList.push(data.data.result.inviteId);
