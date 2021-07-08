@@ -215,7 +215,7 @@ async function movement() {
             let sendInfo = encodeURIComponent(`{"dataSource":"newshortAward","method":"getTaskAward","reqParams":"{\\"taskToken\\":\\"${$.callbackInfo.data.result.taskToken}\\"}","sdkVersion":"1.0.0","clientLanguage":"zh"}`)
             await callbackResult(sendInfo)
           } else if ($.oneTask.taskType === 5 || $.oneTask.taskType === 3 || $.oneTask.taskType === 26) {
-            await $.wait(2000);
+            await $.wait(getRndInteger(7000, 1500));
             console.log(`任务完成`);
           } else if ($.oneTask.taskType === 21) {
             let data = $.callbackInfo
@@ -226,11 +226,11 @@ async function movement() {
             }else{
             console.log(JSON.stringify($.callbackInfo));
             }
-            await $.wait(2000);
+            await $.wait(getRndInteger(500, 1000));
           } else {
             console.log($.callbackInfo);
             console.log(`任务失败`);
-            await $.wait(3000);
+            await $.wait(getRndInteger(2000, 3000));
           }
         }
       } else if ($.oneTask.taskType === 2 && $.oneTask.status === 1 && $.oneTask.scoreRuleVos[0].scoreRuleType === 2){
@@ -247,7 +247,7 @@ async function movement() {
           $.taskToken = productList[j].taskToken;
           console.log(`加购：${productList[j].skuName}`);
           await takePostRequest('add_car');
-          await $.wait(1500);
+          await $.wait(getRndInteger(700, 1500));
           needTime --;
         }
       }else if ($.oneTask.taskType === 2 && $.oneTask.status === 1 && $.oneTask.scoreRuleVos[0].scoreRuleType === 0){
@@ -261,12 +261,12 @@ async function movement() {
           console.log(`做任务：浏览${$.oneActivityInfo.skuName};等待完成`);
           await takePostRequest('olympicgames_doTaskDetail');
           if ($.oneTask.taskType === 2) {
-            await $.wait(2000);
+            await $.wait(getRndInteger(1000, 2000));
             console.log(`任务完成`);
           } else {
             console.log($.callbackInfo);
             console.log(`任务失败`);
-            await $.wait(3000);
+            await $.wait(getRndInteger(2000, 3000));
           }
         }
       }
